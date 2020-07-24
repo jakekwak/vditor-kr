@@ -34,6 +34,8 @@ export class Resize {
                 if (vditor.options.typewriterMode) {
                     vditor.sv.element.style.paddingBottom =
                         vditor.sv.element.parentElement.offsetHeight / 2 + "px";
+                    vditor.sv2.element.style.paddingBottom =
+                        vditor.sv2.element.parentElement.offsetHeight / 2 + "px";
                 }
             };
 

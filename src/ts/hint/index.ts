@@ -173,7 +173,8 @@ ${i === 0 ? "class='vditor-hint--current'" : ""}> ${html}</button>`;
         } else {
             insertHTML(value, vditor);
         }
-        if (this.splitChar === ":" && value.indexOf(":") > -1 && vditor.currentMode !== "sv") {
+        if (this.splitChar === ":" && value.indexOf(":") > -1 && (vditor.currentMode === "wysiwyg" || vditor.currentMode === "ir")) {
+            insertHTML(vditor.lute.SpinVditorDOM(value), vditor);
             range.insertNode(document.createTextNode(" "));
         }
         range.collapse(false);

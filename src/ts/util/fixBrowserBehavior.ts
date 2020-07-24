@@ -29,7 +29,7 @@ import {
 
 // https://github.com/Vanessa219/vditor/issues/508 软键盘无法删除空块
 export const fixGSKeyBackspace = (event: KeyboardEvent, vditor: IVditor, startContainer: Node) => {
-    if (event.keyCode === 229 && event.code === "" && event.key === "Unidentified" && vditor.currentMode !== "sv") {
+    if (event.keyCode === 229 && event.code === "" && event.key === "Unidentified" && (vditor.currentMode === "wysiwyg" || vditor.currentMode === "ir")) {
         const blockElement = hasClosestBlock(startContainer);
         // 移动端的标点符号都显示为 299，因此需限定为空删除的条件
         if (blockElement && blockElement.textContent.trim() === "") {

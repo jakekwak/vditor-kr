@@ -1,5 +1,6 @@
 import {getEventName} from "../util/compatibility";
 import {execAfterRender} from "../util/fixBrowserBehavior";
+import {insertText2} from "../sv2/insertText";
 import {getEditorRange, insertHTML, setSelectionFocus} from "../util/selection";
 import {MenuItem} from "./MenuItem";
 import {toggleSubMenu} from "./setToolbar";
@@ -50,14 +51,17 @@ data-value=":${key}: " data-key=":${key}:" class="vditor-emojis__icon" src="${em
                 } else if (vditor.currentMode === "ir") {
                     html = vditor.lute.SpinVditorIRDOM(value);
                 }
-                if (value.indexOf(":") > -1 && vditor.currentMode !== "sv") {
+                // if (value.indexOf(":") > -1 && vditor.currentMode !== "sv") {
+                if (value.indexOf(":") > -1 && (vditor.currentMode === "wysiwyg" || vditor.currentMode === "ir")) {
                     const tempElement = document.createElement("div");
                     tempElement.innerHTML = html;
                     html = tempElement.firstElementChild.firstElementChild.outerHTML + " ";
                     insertHTML(html, vditor);
-                } else {
+                } else if (vditor.currentMode === 'sv') {
                     range.extractContents();
                     range.insertNode(document.createTextNode(value));
+                } else if (vditor.currentMode === 'sv2') {
+                    insertText2(vditor, value, "", true);
                 }
                 range.collapse(false);
                 setSelectionFocus(range);

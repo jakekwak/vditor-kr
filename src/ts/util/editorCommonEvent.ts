@@ -5,6 +5,8 @@ import {getMarkdown} from "../markdown/getMarkdown";
 import {previewImage} from "../preview/image";
 import {processHeading as processHeadingSV} from "../sv/process";
 import {processKeydown as mdProcessKeydown} from "../sv/processKeydown";
+import {insertText2} from "../sv2/insertText";
+import {processKeydown2 as mdProcessKeydown2} from "../sv2/processKeydown";
 import {setEditMode} from "../toolbar/EditMode";
 import {hidePanel} from "../toolbar/setToolbar";
 import {afterRenderEvent} from "../wysiwyg/afterRenderEvent";
@@ -126,6 +128,10 @@ export const hotkeyEvent = (vditor: IVditor, editorElement: HTMLElement) => {
             if (mdProcessKeydown(vditor, event)) {
                 return;
             }
+        } else if (vditor.currentMode === "sv2") {
+            if (mdProcessKeydown2(vditor, event)) {
+                return;
+            }
         } else if (vditor.currentMode === "wysiwyg") {
             if (processKeydown(vditor, event)) {
                 return;
@@ -179,6 +185,10 @@ export const hotkeyEvent = (vditor: IVditor, editorElement: HTMLElement) => {
                 afterRenderEvent(vditor);
             } else if (vditor.currentMode === "sv") {
                 processHeadingSV(vditor, "#".repeat(parseInt(event.code.replace("Digit", ""), 10)) + " ");
+            } else if (vditor.currentMode === "sv2") {
+                insertText2(vditor,
+                    "#".repeat(parseInt(event.code.replace("Digit", ""), 10)) + " ",
+                    "", false, true);
             } else if (vditor.currentMode === "ir") {
                 processHeading(vditor, "#".repeat(parseInt(event.code.replace("Digit", ""), 10)) + " ");
             }
@@ -187,13 +197,15 @@ export const hotkeyEvent = (vditor: IVditor, editorElement: HTMLElement) => {
         }
 
         // toggle edit mode
-        if (isCtrl(event) && event.altKey && !event.shiftKey && /^Digit[7-9]$/.test(event.code)) {
+        if (isCtrl(event) && event.altKey && !event.shiftKey && /^Digit[7-90]$/.test(event.code)) {
             if (event.code === "Digit7") {
                 setEditMode(vditor, "wysiwyg", event);
             } else if (event.code === "Digit8") {
                 setEditMode(vditor, "ir", event);
             } else if (event.code === "Digit9") {
                 setEditMode(vditor, "sv", event);
+            } else if (event.code === "Digit0") {
+                setEditMode(vditor, "sv2", event);
             }
             return true;
         }

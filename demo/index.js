@@ -62,6 +62,7 @@ window.vditor = new Vditor('vditor', {
   debugger: true,
   typewriterMode: true,
   placeholder: 'Hello, Vditor!',
+  lang: 'ko_KR',
   preview: {
     markdown: {
       toc: true,

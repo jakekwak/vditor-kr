@@ -2,6 +2,7 @@ import {Constants} from "../constants";
 import {i18n} from "../i18n/index";
 import {processToolbar} from "../ir/process";
 import {processToolbar as processToolbarSV} from "../sv/process";
+import {insertText2} from "../sv2/insertText";
 import {getEventName} from "../util/compatibility";
 import {updateHotkeyTip} from "../util/compatibility";
 import {toolbarEvent} from "../wysiwyg/toolbarEvent";
@@ -47,10 +48,13 @@ export class MenuItem {
             } else if (vditor.currentMode === "ir") {
                 processToolbar(vditor, this.element.children[0],
                     menuItem.prefix || "", menuItem.suffix || "");
-            } else {
+            } else if (vditor.currentMode === "sv") {
                 processToolbarSV(vditor, this.element.children[0],
                     menuItem.prefix || "", menuItem.suffix || "");
-            }
+            } else if (vditor.currentMode === "sv2") {
+                insertText2(vditor, menuItem.prefix || "", menuItem.suffix || "",
+                    false, true);
+            } 
         });
     }
 }

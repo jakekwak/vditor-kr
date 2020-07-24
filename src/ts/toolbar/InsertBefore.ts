@@ -9,7 +9,7 @@ export class InsertBefore extends MenuItem {
         this.element.children[0].addEventListener(getEventName(), (event) => {
             event.preventDefault();
             if (this.element.firstElementChild.classList.contains(Constants.CLASS_MENU_DISABLED) ||
-                vditor.currentMode === "sv") {
+                vditor.currentMode === "sv" || vditor.currentMode === "sv2") {
                 return;
             }
             insertEmptyBlock(vditor, "beforebegin");

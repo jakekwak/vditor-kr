@@ -15,7 +15,8 @@ export class Both extends MenuItem {
                 return;
             }
             event.preventDefault();
-            if (vditor.currentMode !== "sv") {
+            // if (vditor.currentMode !== "sv") {
+            if (vditor.currentMode === "ir" || vditor.currentMode === "wysiwyg") {
                 return;
             }
             if (vditor.options.preview.mode === "both") {

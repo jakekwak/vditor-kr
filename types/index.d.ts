@@ -518,8 +518,8 @@ interface IOptions {
         after?(markdown: string): void;
     };
     /** 编辑模式。默认值: 'wysiwyg' */
-    mode?: "wysiwyg" | "sv" | "ir";
-    /** @link https://ld246.com/article/1549638745630#options-preview */
+    mode?: "wysiwyg" | "ir" | "sv" | "sv2";
+    /** @link https://hacpai.com/article/1549638745630#options-preview */
     preview?: IPreview;
     /** @link https://ld246.com/article/1549638745630#options-hint */
     hint?: IHint;
@@ -587,7 +587,7 @@ interface IVditor {
     options: IOptions;
     originalInnerHTML: string;
     lute: Lute;
-    currentMode: "sv" | "wysiwyg" | "ir";
+    currentMode: "wysiwyg" | "ir" | "sv" | "sv2";
     devtools?: {
         element: HTMLDivElement,
         renderEchart(vditor: IVditor): void,
@@ -663,6 +663,14 @@ interface IVditor {
         hlToolbarTimeoutId: number,
     };
     sv?: {
+        range: Range,
+        element: HTMLPreElement,
+        processTimeoutId: number,
+        hlToolbarTimeoutId: number,
+        composingLock: boolean,
+        preventInput: boolean,
+    };
+    sv2?: {
         range: Range,
         element: HTMLPreElement,
         processTimeoutId: number,

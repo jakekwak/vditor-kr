@@ -6,6 +6,7 @@ import {mathRender} from "../markdown/mathRender";
 import {processAfterRender as processSVAfterRender, processSpinVditorSVDOM} from "../sv/process";
 import {setPadding, setTypewriterPosition} from "../ui/initUI";
 import {getEventName, updateHotkeyTip} from "../util/compatibility";
+import {formatRender2} from "../sv2/formatRender";
 import {highlightToolbar} from "../util/highlightToolbar";
 import {processCodeRender} from "../util/processCode";
 import {renderToc} from "../util/toc";
@@ -37,6 +38,8 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
     }
     if (vditor.options.preview.mode === "both" && type === "sv") {
         vditor.preview.element.style.display = "block";
+    } else if (vditor.options.preview.mode === "both" && type === "sv2") {
+        vditor.preview.element.style.display = "block";
     } else {
         vditor.preview.element.style.display = "none";
     }
@@ -49,6 +52,7 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
         hideToolbar(vditor.toolbar.elements, ["both"]);
         showToolbar(vditor.toolbar.elements, ["outdent", "indent", "outline", "insert-before", "insert-after"]);
         vditor.sv.element.style.display = "none";
+        vditor.sv2.element.style.display = "none";
         vditor.wysiwyg.element.parentElement.style.display = "none";
         vditor.ir.element.parentElement.style.display = "block";
 
@@ -79,6 +83,7 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
         hideToolbar(vditor.toolbar.elements, ["both"]);
         showToolbar(vditor.toolbar.elements, ["outdent", "indent", "outline", "insert-before", "insert-after"]);
         vditor.sv.element.style.display = "none";
+        vditor.sv2.element.style.display = "none";
         vditor.wysiwyg.element.parentElement.style.display = "block";
         vditor.ir.element.parentElement.style.display = "none";
 
@@ -106,6 +111,7 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
         hideToolbar(vditor.toolbar.elements, ["outdent", "indent", "outline", "insert-before", "insert-after"]);
         vditor.wysiwyg.element.parentElement.style.display = "none";
         vditor.ir.element.parentElement.style.display = "none";
+        vditor.sv2.element.style.display = "none";
         if (vditor.options.preview.mode === "both") {
             vditor.sv.element.style.display = "block";
         } else if (vditor.options.preview.mode === "editor") {
@@ -129,6 +135,29 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
             enableInput: false,
         });
         setPadding(vditor);
+    } else if (type === "sv2") {
+        showToolbar(vditor.toolbar.elements, ["format", "both"]);
+        hideToolbar(vditor.toolbar.elements, ["outdent", "indent", "outline", "insert-before", "insert-after"]);
+        vditor.undo.resetIcon(vditor);
+        vditor.sv.element.style.display = "none";
+        vditor.wysiwyg.element.parentElement.style.display = "none";
+        vditor.ir.element.parentElement.style.display = "none";
+        if (vditor.options.preview.mode === "both") {
+            vditor.sv2.element.style.display = "block";
+        } else if (vditor.options.preview.mode === "editor") {
+            vditor.sv2.element.style.display = "block";
+        }
+        vditor.currentMode = "sv2";
+        formatRender2(vditor, markdownText, undefined, {
+            enableAddUndoStack: true,
+            enableHint: false,
+            enableInput: false,
+        });
+        if (typeof event !== "string") {
+            // 初始化不 focus
+            vditor.sv2.element.focus();
+        }
+        setPadding(vditor);
     }
     vditor.undo.resetIcon(vditor);
     if (typeof event !== "string") {
@@ -147,6 +176,7 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
     }
 
     vditor.outline.toggle(vditor, vditor.currentMode !== "sv" && vditor.options.outline.enable);
+    vditor.outline.toggle(vditor, (vditor.currentMode === "ir" || vditor.currentMode === "wysiwyg" ) && vditor.options.outline.enable);
 };
 
 export class EditMode extends MenuItem {
@@ -157,9 +187,10 @@ export class EditMode extends MenuItem {
 
         const panelElement = document.createElement("div");
         panelElement.className = `vditor-hint${menuItem.level === 2 ? "" : " vditor-panel--arrow"}`;
-        panelElement.innerHTML = `<button data-mode="wysiwyg">${i18n[vditor.options.lang].wysiwyg} &lt;${updateHotkeyTip("⌥⌘7")}></button>
-<button data-mode="ir">${i18n[vditor.options.lang].instantRendering} &lt;${updateHotkeyTip("⌥⌘8")}></button>
-<button data-mode="sv">${i18n[vditor.options.lang].splitView} &lt;${updateHotkeyTip("⌥⌘9")}></button>`;
+        panelElement.innerHTML = `<button data-mode="wysiwyg">${i18n[vditor.options.lang].wysiwyg} &lt;${updateHotkeyTip("⌘-⌥-7")}></button>
+<button data-mode="ir">${i18n[vditor.options.lang].instantRendering} &lt;${updateHotkeyTip("⌘-⌥-8")}></button>
+<button data-mode="sv">${i18n[vditor.options.lang].splitView} &lt;${updateHotkeyTip("⌘-⌥-9")}></button>
+<button data-mode="sv2">${i18n[vditor.options.lang].splitView2} &lt;${updateHotkeyTip("⌘-⌥-0")}></button>`;
 
         this.element.appendChild(panelElement);
 
@@ -187,6 +218,13 @@ export class EditMode extends MenuItem {
         panelElement.children.item(2).addEventListener(getEventName(), (event: Event) => {
             // markdown
             setEditMode(vditor, "sv", event);
+            event.preventDefault();
+            event.stopPropagation();
+        });
+
+        panelElement.children.item(3).addEventListener(getEventName(), (event: Event) => {
+            // markdown
+            setEditMode(vditor, "sv2", event);
             event.preventDefault();
             event.stopPropagation();
         });

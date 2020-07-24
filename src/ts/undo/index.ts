@@ -20,6 +20,7 @@ class Undo {
     private wysiwyg: IUndo;
     private ir: IUndo;
     private sv: IUndo;
+    private sv2: IUndo;
 
     constructor() {
         this.resetStack();
@@ -198,6 +199,12 @@ class Undo {
             undoStack: [],
         };
         this.sv = {
+            hasUndo: false,
+            lastText: "",
+            redoStack: [],
+            undoStack: [],
+        };
+        this.sv2 = {
             hasUndo: false,
             lastText: "",
             redoStack: [],

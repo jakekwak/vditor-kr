@@ -14,6 +14,10 @@ import {Outline} from "./ts/outline";
 import {Preview} from "./ts/preview/index";
 import {Resize} from "./ts/resize/index";
 import {Editor} from "./ts/sv/index";
+import {formatRender2} from "./ts/sv2/formatRender";
+// import {getSelectText2} from "./ts/sv2/getSelectText";
+import {Editor2} from "./ts/sv2/index";
+import {insertText2} from "./ts/sv2/insertText";
 import {inputEvent} from "./ts/sv/inputEvent";
 import {processAfterRender as processSVAfterRender} from "./ts/sv/process";
 import {Tip} from "./ts/tip";
@@ -84,6 +88,7 @@ class Vditor extends VditorMethod {
         };
 
         this.vditor.sv = new Editor(this.vditor);
+        this.vditor.sv2 = new Editor2(this.vditor);
         this.vditor.undo = new Undo();
         this.vditor.wysiwyg = new WYSIWYG(this.vditor);
         this.vditor.ir = new IR(this.vditor);
@@ -164,6 +169,8 @@ class Vditor extends VditorMethod {
     public focus() {
         if (this.vditor.currentMode === "sv") {
             this.vditor.sv.element.focus();
+        } else if (this.vditor.currentMode === "sv2") {
+            this.vditor.sv2.element.focus();
         } else if (this.vditor.currentMode === "wysiwyg") {
             this.vditor.wysiwyg.element.focus();
         } else if (this.vditor.currentMode === "ir") {
@@ -175,6 +182,8 @@ class Vditor extends VditorMethod {
     public blur() {
         if (this.vditor.currentMode === "sv") {
             this.vditor.sv.element.blur();
+        } else if (this.vditor.currentMode === "sv2") {
+            this.vditor.sv2.element.blur();
         } else if (this.vditor.currentMode === "wysiwyg") {
             this.vditor.wysiwyg.element.blur();
         } else if (this.vditor.currentMode === "ir") {
@@ -204,6 +213,8 @@ class Vditor extends VditorMethod {
             return getSelectText(this.vditor.wysiwyg.element);
         } else if (this.vditor.currentMode === "sv") {
             return getSelectText(this.vditor.sv.element);
+        } else if (this.vditor.currentMode === "sv2") {
+            return getSelectText(this.vditor.sv2.element);
         } else if (this.vditor.currentMode === "ir") {
             return getSelectText(this.vditor.ir.element);
         }
@@ -268,12 +279,20 @@ class Vditor extends VditorMethod {
         if (window.getSelection().isCollapsed) {
             return;
         }
-        document.execCommand("delete", false);
+        if (this.vditor.currentMode === "sv2") {
+            insertText2(this.vditor, "", "", true);
+        } else {
+            document.execCommand("delete", false);
+        }
     }
 
     /** 更新选中内容 */
     public updateValue(value: string) {
-        document.execCommand("insertHTML", false, value);
+        if (this.vditor.currentMode === "sv2") {
+            insertText2(this.vditor, value, "", true);
+        } else {
+            document.execCommand("insertHTML", false, value);
+        }
     }
 
     /** 在焦点处插入内容，并默认进行 Markdown 渲染 */
@@ -288,6 +307,8 @@ class Vditor extends VditorMethod {
             if (render) {
                 inputEvent(this.vditor);
             }
+        } else if (this.vditor.currentMode === "sv2") {
+            insertText2(this.vditor, value, "");
         } else if (this.vditor.currentMode === "wysiwyg") {
             this.vditor.wysiwyg.preventInput = true;
             if (render) {
@@ -307,6 +328,15 @@ class Vditor extends VditorMethod {
             this.vditor.sv.element.innerHTML = this.vditor.lute.SpinVditorSVDOM(markdown);
             processSVAfterRender(this.vditor, {
                 enableAddUndoStack: true,
+                enableHint: false,
+                enableInput: false,
+            });
+        } else if (this.vditor.currentMode === "sv2") {
+            formatRender2(this.vditor, markdown, {
+                end: markdown.length,
+                start: markdown.length,
+            }, {
+                enableAddUndoStack: !clearStack,
                 enableHint: false,
                 enableInput: false,
             });

@@ -28,6 +28,13 @@ export class Preview extends MenuItem {
                     } else {
                         vditor.preview.element.style.display = "none";
                     }
+                } else if (vditor.currentMode === "sv2") {
+                    vditor.sv2.element.style.display = "block";
+                    if (vditor.options.preview.mode === "both") {
+                        vditor.preview.element.style.display = "block";
+                    } else {
+                        vditor.preview.element.style.display = "none";
+                    }
                 } else {
                     vditor[vditor.currentMode].element.parentElement.style.display = "block";
                     vditor.preview.element.style.display = "none";
@@ -39,6 +46,8 @@ export class Preview extends MenuItem {
                 vditor.preview.element.style.display = "block";
                 if (vditor.currentMode === "sv") {
                     vditor.sv.element.style.display = "none";
+                } else if (vditor.currentMode === "sv2") {
+                    vditor.sv2.element.style.display = "none";
                 } else {
                     vditor[vditor.currentMode].element.parentElement.style.display = "none";
                 }
