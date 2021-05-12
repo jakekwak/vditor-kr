@@ -121,6 +121,7 @@ const genUploadedLabel = (responseText: string, vditor: IVditor) => {
             || type.indexOf(".jpg") === 0 || type.indexOf(".jpeg") === 0 || type.indexOf(".jfif") === 0 || type.indexOf(".pjp") === 0 || type.indexOf(".pjpeg") === 0
             || type.indexOf(".png") === 0
             || type.indexOf(".svg") === 0
+            || type.indexOf(".avif") === 0
             || type.indexOf(".webp") === 0) {
             if (vditor.currentMode === "wysiwyg") {
                 succFileText += `<img alt="${filename}" src="${path}">`;
