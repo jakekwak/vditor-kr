@@ -114,6 +114,15 @@ const genUploadedLabel = (responseText: string, vditor: IVditor) => {
             } else {
                 succFileText += `[${filename}](${path})\n`;
             }
+        } else if (type.indexOf(".mp4") === 0) {
+          if (vditor.currentMode === "wysiwyg") {
+              succFileText += `<div class="vditor-wysiwyg__block" data-type="html-block"
+data-block="0"><pre><code>&lt;video controls="controls" src="${path}"&gt;&lt;/video&gt;</code></pre>`;
+          } else if (vditor.currentMode === "ir") {
+              succFileText += `<video controls="controls" src="${path}"></video>\n`;
+          } else {
+              succFileText += `[${filename}](${path})\n`;
+          }
         } else if (type.indexOf(".apng") === 0
             || type.indexOf(".bmp") === 0
             || type.indexOf(".gif") === 0
