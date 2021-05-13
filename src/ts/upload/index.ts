@@ -116,10 +116,18 @@ const genUploadedLabel = (responseText: string, vditor: IVditor) => {
             }
         } else if (type.indexOf(".mp4") === 0) {
           if (vditor.currentMode === "wysiwyg") {
+              // succFileText += `<div class="vditor-wysiwyg__block" data-type="html-block"
+// data-block="0"><pre><code>&lt;video controls="controls" src="${path}"&gt;&lt;/video&gt;</code></pre>`;
               succFileText += `<div class="vditor-wysiwyg__block" data-type="html-block"
-data-block="0"><pre><code>&lt;video controls="controls" src="${path}"&gt;&lt;/video&gt;</code></pre>`;
+data-block="0"><pre><code>&lt;video autoplay="autoplay" loop="loop" preload="auto" playsinline webkit-playsinline muted&gt;
+&lt;source src="${path}" type="video/mp4" /&gt;
+&lt;/video&gt;\n</code></pre>`;
           } else if (vditor.currentMode === "ir") {
-              succFileText += `<video controls="controls" src="${path}"></video>\n`;
+              // succFileText += `<video controls="controls" src="${path}"></video>\n`;
+              succFileText += `<video autoplay="autoplay" loop="loop" preload="auto" playsinline webkit-playsinline muted>
+              <source src="${path}" type="video/mp4" />
+              </video>\n`;
+
           } else {
               succFileText += `[${filename}](${path})\n`;
           }
